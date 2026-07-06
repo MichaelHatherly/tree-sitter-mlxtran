@@ -1,0 +1,31 @@
+==================
+string and number keyed pairs, and adjacent angle sections
+==================
+
+<DATAFILE>
+[SETTINGS]
+dataType = {'1'=plasma, '2'=plasma}
+
+<MODEL>
+[INDIVIDUAL]
+input = {a}
+
+---
+
+(source_file
+  (angle_section
+    name: (section_name)
+    (square_section
+      name: (section_name)
+      (assignment
+        target: (identifier)
+        value: (list
+          (pair key: (string) value: (identifier))
+          (pair key: (string) value: (identifier))))))
+  (angle_section
+    name: (section_name)
+    (square_section
+      name: (section_name)
+      (assignment
+        target: (identifier)
+        value: (list (identifier))))))

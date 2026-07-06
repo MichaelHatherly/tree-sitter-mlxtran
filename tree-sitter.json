@@ -1,0 +1,37 @@
+{
+  "grammars": [
+    {
+      "name": "mlxtran",
+      "camelcase": "Mlxtran",
+      "scope": "source.mlxtran",
+      "path": ".",
+      "file-types": [
+        "mlxtran",
+        "txt"
+      ],
+      "highlights": [
+        "queries/highlights.scm"
+      ],
+      "injection-regex": "^mlxtran$"
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "license": "MIT",
+    "description": "Tree-sitter grammar for Monolix mlxtran files",
+    "authors": [
+      {
+        "name": "Michael Hatherly",
+        "email": "michaelhatherly@gmail.com"
+      }
+    ]
+  },
+  "bindings": {
+    "c": true,
+    "go": false,
+    "node": true,
+    "python": false,
+    "rust": true,
+    "swift": false
+  }
+}

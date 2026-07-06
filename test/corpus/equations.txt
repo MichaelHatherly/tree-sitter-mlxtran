@@ -1,0 +1,118 @@
+==================
+multiply binds tighter than add
+==================
+
+EQUATION:
+y = a + b*c
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (identifier))))))
+
+==================
+power is right-associative and binds tighter than multiply
+==================
+
+EQUATION:
+y = 10^a^b*c
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (binary_expression
+        left: (binary_expression
+          left: (number)
+          right: (binary_expression
+            left: (identifier)
+            right: (identifier)))
+        right: (identifier)))))
+
+==================
+unary minus wraps a parenthesized subtraction
+==================
+
+EQUATION:
+z = -(a - b)
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (unary_expression
+        operand: (parenthesized_expression
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+==================
+ode derivative target with left-associative products
+==================
+
+EQUATION:
+ddt_I = beta*T*I - dI*I
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (derivative)
+      value: (binary_expression
+        left: (binary_expression
+          left: (binary_expression
+            left: (identifier)
+            right: (identifier))
+          right: (identifier))
+        right: (binary_expression
+          left: (identifier)
+          right: (identifier))))))
+
+==================
+nested calls and power with parenthesised argument
+==================
+
+EQUATION:
+y = log10(max((r*I*2), 0.001)) + 10^(T0)
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (binary_expression
+        left: (call
+          function: (identifier)
+          arguments: (arguments
+            (call
+              function: (identifier)
+              arguments: (arguments
+                (parenthesized_expression
+                  (binary_expression
+                    left: (binary_expression
+                      left: (identifier)
+                      right: (identifier))
+                    right: (number)))
+                (number)))))
+        right: (binary_expression
+          left: (number)
+          right: (parenthesized_expression
+            (identifier)))))))

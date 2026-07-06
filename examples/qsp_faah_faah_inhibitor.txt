@@ -1,0 +1,15 @@
+[LONGITUDINAL]
+input = {ktr_r_p, Km_p_m_A, MEC, PLASMA}
+
+PK:
+depot(target=Adrug)
+
+EQUATION:
+odeType = stiff
+t_0 = -20
+A_p_0 = 0.87
+Ktr_p_r_A = 0.62
+ddt_A_p = ktr_r_p*(A_r-A_p*Ktr_p_r_A)/(A_r+A_p+Km_p_m_A) + MEC/PLASMA*ktr_m_p_A*(A_m-A_p*Ktr_p_m_A)/(A_m+A_p+Km_p_m_A)
+
+OUTPUT:
+output = {A_p}

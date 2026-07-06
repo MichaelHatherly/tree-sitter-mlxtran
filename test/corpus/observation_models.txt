@@ -1,0 +1,78 @@
+==================
+categorical model: logit(P(<=k)) entries, newline-separated
+==================
+
+DEFINITION:
+level = {type=categorical, categories={0, 1, 2, 3},
+  logit(P(level<=0)) = th1
+  logit(P(level<=1)) = th1 + th2
+}
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (list
+        (pair key: (identifier) value: (identifier))
+        (pair
+          key: (identifier)
+          value: (list (number) (number) (number) (number)))
+        (pair
+          key: (call
+            function: (identifier)
+            arguments: (arguments
+              (call
+                function: (identifier)
+                arguments: (arguments
+                  (comparison left: (identifier) right: (number))))))
+          value: (identifier))
+        (pair
+          key: (call
+            function: (identifier)
+            arguments: (arguments
+              (call
+                function: (identifier)
+                arguments: (arguments
+                  (comparison left: (identifier) right: (number))))))
+          value: (binary_expression left: (identifier) right: (identifier)))))))
+
+==================
+count model: log(P(Y=k)) entry and time-to-event hazard
+==================
+
+DEFINITION:
+Y = {type=count, log(P(Y=k)) = -lambda + k*log(lambda)}
+Event = {type=event, hazard=h}
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (list
+        (pair key: (identifier) value: (identifier))
+        (pair
+          key: (call
+            function: (identifier)
+            arguments: (arguments
+              (call
+                function: (identifier)
+                arguments: (arguments
+                  (pair key: (identifier) value: (identifier))))))
+          value: (binary_expression
+            left: (unary_expression operand: (identifier))
+            right: (binary_expression
+              left: (identifier)
+              right: (call
+                function: (identifier)
+                arguments: (arguments (identifier))))))))
+    (assignment
+      target: (identifier)
+      value: (list
+        (pair key: (identifier) value: (identifier))
+        (pair key: (identifier) value: (identifier))))))

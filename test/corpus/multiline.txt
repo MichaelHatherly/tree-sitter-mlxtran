@@ -1,0 +1,57 @@
+==================
+multi-line brace list with nested categories
+==================
+
+[COVARIATE]
+DEFINITION:
+tAPGAR =
+{
+  transform = APGAR,
+  categories = {
+    High = {10, 8, 9},
+    Low = {1, 2, 3} },
+  reference = Med
+}
+
+---
+
+(source_file
+  (square_section
+    name: (section_name)
+    (label_block
+      name: (block_name)
+      (assignment
+        target: (identifier)
+        value: (list
+          (pair key: (identifier) value: (identifier))
+          (pair
+            key: (identifier)
+            value: (list
+              (pair key: (identifier) value: (list (number) (number) (number)))
+              (pair key: (identifier) value: (list (number) (number) (number)))))
+          (pair key: (identifier) value: (identifier)))))))
+
+==================
+assignment value split across the next line
+==================
+
+[LONGITUDINAL]
+I_0 =
+  (10^(V0_exp))*(inoculum/5)
+
+---
+
+(source_file
+  (square_section
+    name: (section_name)
+    (assignment
+      target: (identifier)
+      value: (binary_expression
+        left: (parenthesized_expression
+          (binary_expression
+            left: (number)
+            right: (parenthesized_expression (identifier))))
+        right: (parenthesized_expression
+          (binary_expression
+            left: (identifier)
+            right: (number)))))))

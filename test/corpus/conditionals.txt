@@ -1,0 +1,61 @@
+==================
+if / elseif / else with equality and inequality conditions
+==================
+
+EQUATION:
+if bCB == 0
+   b = 1
+elseif bSB != 0
+   b = 2
+else
+   b = 3
+end
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (if_statement
+      condition: (comparison left: (identifier) right: (number))
+      (assignment target: (identifier) value: (number))
+      (elseif_clause
+        condition: (comparison left: (identifier) right: (number))
+        (assignment target: (identifier) value: (number)))
+      (else_clause
+        (assignment target: (identifier) value: (number))))))
+
+==================
+if / else / end with a comparison condition
+==================
+
+EQUATION:
+if abs(a-b) < threshold
+   c = 0
+else
+   c = a-b
+end
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (if_statement
+      condition: (comparison
+        left: (call
+          function: (identifier)
+          arguments: (arguments
+            (binary_expression
+              left: (identifier)
+              right: (identifier))))
+        right: (identifier))
+      (assignment
+        target: (identifier)
+        value: (number))
+      (else_clause
+        (assignment
+          target: (identifier)
+          value: (binary_expression
+            left: (identifier)
+            right: (identifier)))))))

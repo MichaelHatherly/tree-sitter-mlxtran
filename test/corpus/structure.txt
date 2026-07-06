@@ -1,0 +1,44 @@
+==================
+square section headers
+==================
+
+[LONGITUDINAL]
+[INDIVIDUAL]
+
+---
+
+(source_file
+  (square_section
+    name: (section_name))
+  (square_section
+    name: (section_name)))
+
+==================
+angle section wrapping square sections
+==================
+
+<MODEL>
+[INDIVIDUAL]
+
+---
+
+(source_file
+  (angle_section
+    name: (section_name)
+    (square_section
+      name: (section_name))))
+
+==================
+comments appear in the tree
+==================
+
+; a leading comment
+[LONGITUDINAL] ; trailing comment
+
+---
+
+(source_file
+  (comment)
+  (square_section
+    name: (section_name))
+  (comment))

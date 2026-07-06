@@ -1,0 +1,9 @@
+[LONGITUDINAL]
+input = {th1, th2, th3}
+
+DEFINITION:
+level = {type=categorical, categories={0, 1, 2, 3},
+  logit(P(level<=0)) = th1
+  logit(P(level<=1)) = th1 + th2
+  logit(P(level<=2)) = th1 + th2 + th3
+}

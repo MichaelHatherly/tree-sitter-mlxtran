@@ -1,0 +1,30 @@
+==================
+task call statements with keyword arguments
+==================
+
+[TASKS]
+populationParameters()
+fim(method = Linearization)
+individualParameters(method = {conditionalMean, conditionalMode})
+
+---
+
+(source_file
+  (square_section
+    name: (section_name)
+    (expression_statement
+      (call
+        function: (identifier)
+        arguments: (arguments)))
+    (expression_statement
+      (call
+        function: (identifier)
+        arguments: (arguments
+          (pair key: (identifier) value: (identifier)))))
+    (expression_statement
+      (call
+        function: (identifier)
+        arguments: (arguments
+          (pair
+            key: (identifier)
+            value: (list (identifier) (identifier))))))))

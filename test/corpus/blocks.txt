@@ -1,0 +1,54 @@
+==================
+label block with assignment and brace list
+==================
+
+[LONGITUDINAL]
+input = {ka, V, Cl}
+
+DEFINITION:
+CONC = {distribution=normal, prediction=Cc}
+
+---
+
+(source_file
+  (square_section
+    name: (section_name)
+    (assignment
+      target: (identifier)
+      value: (list
+        (identifier)
+        (identifier)
+        (identifier)))
+    (label_block
+      name: (block_name)
+      (assignment
+        target: (identifier)
+        value: (list
+          (pair key: (identifier) value: (identifier))
+          (pair key: (identifier) value: (identifier)))))))
+
+==================
+string, keyword and call values
+==================
+
+[FILEINFO]
+file = 'data/theo.txt'
+delimiter = tab
+
+EQUATION:
+Cc = pkmodel(ka, V, Cl)
+
+---
+
+(source_file
+  (square_section
+    name: (section_name)
+    (assignment target: (identifier) value: (string))
+    (assignment target: (identifier) value: (identifier))
+    (label_block
+      name: (block_name)
+      (assignment
+        target: (identifier)
+        value: (call
+          function: (identifier)
+          arguments: (arguments (identifier) (identifier) (identifier)))))))

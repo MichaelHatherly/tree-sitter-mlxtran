@@ -1,0 +1,49 @@
+==================
+logical, unary-not and not-equal operator variants
+==================
+
+EQUATION:
+a = ~x
+b = !y
+c = p | q
+d = r & s
+if u ~= v
+   w = 1
+end
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment target: (identifier) value: (unary_expression operand: (identifier)))
+    (assignment target: (identifier) value: (unary_expression operand: (identifier)))
+    (assignment target: (identifier) value: (binary_expression left: (identifier) right: (identifier)))
+    (assignment target: (identifier) value: (binary_expression left: (identifier) right: (identifier)))
+    (if_statement
+      condition: (comparison left: (identifier) right: (identifier))
+      (assignment target: (identifier) value: (number)))))
+
+==================
+parenthesized comparison as a piecewise indicator
+==================
+
+EQUATION:
+y = (t>0)*b + (t<=tD)*c
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (binary_expression
+        left: (binary_expression
+          left: (parenthesized_expression
+            (comparison left: (identifier) right: (number)))
+          right: (identifier))
+        right: (binary_expression
+          left: (parenthesized_expression
+            (comparison left: (identifier) right: (identifier)))
+          right: (identifier))))))

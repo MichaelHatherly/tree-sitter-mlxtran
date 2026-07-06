@@ -1,0 +1,47 @@
+==================
+multi-line description terminated by a section header
+==================
+
+DESCRIPTION:
+The administration is extravascular with a first order absorption (rate constant ka).
+The PK model has one compartment (volume V) and a linear elimination (clearance Cl).
+
+[LONGITUDINAL]
+input = {ka}
+
+---
+
+(source_file
+  (description_block
+    (block_name)
+    (description_text)
+    (description_text))
+  (square_section
+    name: (section_name)
+    (assignment
+      target: (identifier)
+      value: (list (identifier)))))
+
+==================
+inline description terminated by a label header
+==================
+
+DESCRIPTION: Model #1 from our model building strategy.
+INPUT:
+
+[LONGITUDINAL]
+input = {a}
+
+---
+
+(source_file
+  (description_block
+    (block_name)
+    (description_text))
+  (label_block
+    name: (block_name))
+  (square_section
+    name: (section_name)
+    (assignment
+      target: (identifier)
+      value: (list (identifier)))))
