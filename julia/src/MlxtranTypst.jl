@@ -155,6 +155,16 @@ function call(node, src)
     return "$fname($(join(parts, ", ")))"
 end
 
+"""Render a number, turning E-notation into `mantissa times 10^(exp)` so typst
+does not treat the `e` as a variable."""
+function number(text::AbstractString)
+    m = match(r"^([0-9]*\.?[0-9]+)[eE]([+-]?[0-9]+)$", text)
+    m === nothing && return String(text)
+    mantissa, exponent = m.captures
+    exponent = replace(exponent, r"^\+" => "")
+    return mantissa == "1" ? "10^($exponent)" : "$mantissa times 10^($exponent)"
+end
+
 """State name of a `ddt_<state>` derivative token as a d/dt fraction."""
 function derivative(node, src)
     state = replace(TS.slice(src, node), r"^ddt_" => "")
@@ -162,10 +172,7 @@ function derivative(node, src)
 end
 
 function assignment(node, src)
-    target = TS.child(node, "target")
-    tgt = TS.node_type(target) == "derivative" ? derivative(target, src) :
-          prettify(TS.slice(src, target))
-    return "$tgt = $(to_typst(TS.child(node, "value"), src))"
+    return "$(target_typst(node, src)) = $(to_typst(TS.child(node, "value"), src))"
 end
 
 function to_typst(node, src)
@@ -179,28 +186,102 @@ function to_typst(node, src)
     t == "call" && return call(node, src)
     t == "identifier" && return prettify(TS.slice(src, node))
     t == "derivative" && return derivative(node, src)
-    t == "number" && return String(TS.slice(src, node))
+    t == "number" && return number(TS.slice(src, node))
     t == "string" && return "\"$(strip(TS.slice(src, node), '\''))\""
     return String(TS.slice(src, node))
 end
 
 # --- Traversal --------------------------------------------------------------
 
-const CONTAINERS = Set(["source_file", "angle_section", "square_section", "label_block"])
+const SECTIONS = Set(["source_file", "angle_section", "square_section"])
+
+# Model equations live in these blocks; other blocks (DEFINITION, OBSERVATION)
+# and bare section statements (FILEINFO, SETTINGS, TASKS) are configuration.
+const EQUATION_BLOCKS = Set(["EQUATION:", "PK:", "ODE:"])
 
 is_equation(node) =
     TS.node_type(node) == "expression_statement" ||
     (TS.node_type(node) == "assignment" &&
      TS.node_type(TS.child(node, "value")) != "list")
 
-function collect_equations!(out, node, src)
-    t = TS.node_type(node)
-    if is_equation(node)
-        push!(out, to_typst(node, src))
-    elseif t in CONTAINERS
-        for c in named_children(node)
-            collect_equations!(out, c, src)
+function target_typst(assign, src)
+    target = TS.child(assign, "target")
+    TS.node_type(target) == "derivative" && return derivative(target, src)
+    return prettify(TS.slice(src, target))
+end
+
+# Branches of an `if_statement` as (condition-or-nothing, body-statements). The
+# condition is the first named child of the `if`/`elseif`; `else` has none.
+function if_branches(node)
+    kids = collect(named_children(node))
+    branches = Any[]
+    body = filter(k -> !(TS.node_type(k) in ("elseif_clause", "else_clause")), kids[2:end])
+    push!(branches, (kids[1], body))
+    for k in kids
+        t = TS.node_type(k)
+        if t == "elseif_clause"
+            ck = collect(named_children(k))
+            push!(branches, (ck[1], ck[2:end]))
+        elseif t == "else_clause"
+            push!(branches, (nothing, collect(named_children(k))))
         end
+    end
+    return branches
+end
+
+# `nothing` in a guard marks an `else` branch.
+function guard_label(parts)
+    length(parts) == 1 && parts[1] === nothing && return "\"otherwise\""
+    rendered = [p === nothing ? "\"otherwise\"" : p for p in parts]
+    return "\"if\" " * join(rendered, " \"and\" ")
+end
+
+# Flatten a (possibly nested) `if_statement` into (target, guard-label, value)
+# triples, conjoining branch conditions along the path.
+function flatten_if!(triples, node, guard, src)
+    for (cond, body) in if_branches(node)
+        parts = vcat(guard, Any[cond === nothing ? nothing : to_typst(cond, src)])
+        for stmt in body
+            t = TS.node_type(stmt)
+            if t == "assignment"
+                push!(triples, (target_typst(stmt, src), guard_label(parts),
+                                to_typst(TS.child(stmt, "value"), src)))
+            elseif t == "if_statement"
+                flatten_if!(triples, stmt, parts, src)
+            end
+        end
+    end
+    return triples
+end
+
+"""Render an `if_statement` as one typst `cases` equation per assigned target,
+preserving first-appearance order."""
+function cases_equations(node, src)
+    triples = flatten_if!(Tuple{String,String,String}[], node, Any[], src)
+    order = String[]
+    rows = Dict{String,Vector{String}}()
+    for (target, label, value) in triples
+        haskey(rows, target) || (push!(order, target); rows[target] = String[])
+        push!(rows[target], "$value & $label")
+    end
+    return ["$target = cases($(join(rows[target], ", ")))" for target in order]
+end
+
+function collect_equations!(out, node, src, in_block)
+    t = TS.node_type(node)
+    if t == "label_block"
+        inner = TS.slice(src, TS.child(node, "name")) in EQUATION_BLOCKS
+        for c in named_children(node)
+            collect_equations!(out, c, src, inner)
+        end
+    elseif t in SECTIONS
+        for c in named_children(node)
+            collect_equations!(out, c, src, in_block)
+        end
+    elseif in_block && is_equation(node)
+        push!(out, to_typst(node, src))
+    elseif in_block && t == "if_statement"
+        append!(out, cases_equations(node, src))
     end
     return out
 end
@@ -224,7 +305,7 @@ as a typst math block, one per line.
 function mlxtran_to_typst(source::AbstractString)
     tree = parse(parser(), source)
     out = String[]
-    collect_equations!(out, TS.root(tree), source)
+    collect_equations!(out, TS.root(tree), source, false)
     return join(("\$$e\$" for e in out), "\n")
 end
 

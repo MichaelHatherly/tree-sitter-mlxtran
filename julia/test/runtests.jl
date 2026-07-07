@@ -44,4 +44,23 @@ const M = MlxtranTypst
         src = "EQUATION:\ny = a + b\nddt_x = -k*x"
         @test M.mlxtran_to_typst(src) == "\$y = a + b\$\n\$(dif x)/(dif t) = -k dot x\$"
     end
+
+    @testset "scientific notation" begin
+        @test M.mlxtran_to_typst("EQUATION:\nk = 1.5e-6*C") ==
+              "\$k = 1.5 times 10^(-6) dot C\$"
+        @test M.mlxtran_to_typst("EQUATION:\nk = 1e-6") == "\$k = 10^(-6)\$"
+        @test M.mlxtran_to_typst("EQUATION:\nk = 2.3E+4") == "\$k = 2.3 times 10^(4)\$"
+    end
+
+    @testset "conditional cases" begin
+        @test M.mlxtran_to_typst("EQUATION:\nif abs(a-b) < c\nx = 0\nelse\nx = a-b\nend") ==
+              "\$x = cases(0 & \"if\" abs(a - b) < c, a - b & \"otherwise\")\$"
+        @test M.mlxtran_to_typst("EQUATION:\nif p == 0\ny = 1\nelseif p == 1\ny = 2\nelse\ny = 3\nend") ==
+              "\$y = cases(1 & \"if\" p = 0, 2 & \"if\" p = 1, 3 & \"otherwise\")\$"
+        @test M.mlxtran_to_typst("EQUATION:\nif s != 0\na = 1\nb = 2\nelse\na = 3\nb = 4\nend") ==
+              "\$a = cases(1 & \"if\" s eq.not 0, 3 & \"otherwise\")\$\n" *
+              "\$b = cases(2 & \"if\" s eq.not 0, 4 & \"otherwise\")\$"
+        @test M.mlxtran_to_typst("EQUATION:\nif u > 0\nif v > 0\nw = 1\nelse\nw = 2\nend\nelse\nw = 3\nend") ==
+              "\$w = cases(1 & \"if\" u > 0 \"and\" v > 0, 2 & \"if\" u > 0 \"and\" \"otherwise\", 3 & \"otherwise\")\$"
+    end
 end

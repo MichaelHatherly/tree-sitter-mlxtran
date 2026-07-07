@@ -26,6 +26,12 @@ one per line. Wrap the lines in a typst document and run `typst compile` to
 render. `equation_to_typst(node, source)` converts a single assignment or
 expression subtree.
 
+## Scope
+
+Only equation blocks are converted: `EQUATION:`, `PK:`, `ODE:`. Configuration
+sections (FILEINFO, DEFINITION, OBSERVATION, TASKS, SETTINGS, PARAMETER) are
+skipped.
+
 ## Rendering conventions
 
 - Multiplication renders as `dot` (centered dot).
@@ -33,4 +39,6 @@ expression subtree.
 - Greek names map to symbols, including camelCase prefixes: `alphaE` -> `alpha_E`.
 - Underscore tails become subscripts: `beta_prime_exp` -> `beta_("prime,exp")`.
 - Multi-letter non-greek names are quoted so typst renders them literally.
-- `list`-valued assignments (INPUT/OUTPUT config) are skipped.
+- Scientific notation: `1.5e-6` -> `1.5 times 10^(-6)`.
+- `if`/`elseif`/`else` blocks become one `cases` piecewise per assigned target,
+  conjoining conditions from nested branches.
