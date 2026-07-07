@@ -52,6 +52,12 @@ const M = MlxtranTypst
         @test M.mlxtran_to_typst("EQUATION:\nk = 2.3E+4") == "\$k = 2.3 times 10^(4)\$"
     end
 
+    @testset "keyword arguments" begin
+        @test M.mlxtran_to_typst("PK:\ncompartment(cmt = 1, volume = V)") ==
+              "\$\"compartment\"(\"cmt\" = 1, \"volume\" = V)\$"
+        @test M.mlxtran_to_typst("PK:\ndepot(target = A)") == "\$\"depot\"(\"target\" = A)\$"
+    end
+
     @testset "conditional cases" begin
         @test M.mlxtran_to_typst("EQUATION:\nif abs(a-b) < c\nx = 0\nelse\nx = a-b\nend") ==
               "\$x = cases(0 & \"if\" abs(a - b) < c, a - b & \"otherwise\")\$"

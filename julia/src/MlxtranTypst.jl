@@ -184,6 +184,7 @@ function to_typst(node, src)
     t == "comparison" && return comparison(node, src)
     t == "parenthesized_expression" && return to_typst(TS.named_child(node, 1), src)
     t == "call" && return call(node, src)
+    t == "pair" && return "$(to_typst(TS.child(node, "key"), src)) = $(to_typst(TS.child(node, "value"), src))"
     t == "identifier" && return prettify(TS.slice(src, node))
     t == "derivative" && return derivative(node, src)
     t == "number" && return number(TS.slice(src, node))
