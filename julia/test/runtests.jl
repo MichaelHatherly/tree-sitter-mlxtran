@@ -67,6 +67,15 @@ const M = MlxtranTypst
               "\$a = cases(1 & \"if\" s eq.not 0, 3 & \"otherwise\")\$\n" *
               "\$b = cases(2 & \"if\" s eq.not 0, 4 & \"otherwise\")\$"
         @test M.mlxtran_to_typst("EQUATION:\nif u > 0\nif v > 0\nw = 1\nelse\nw = 2\nend\nelse\nw = 3\nend") ==
-              "\$w = cases(1 & \"if\" u > 0 \"and\" v > 0, 2 & \"if\" u > 0 \"and\" \"otherwise\", 3 & \"otherwise\")\$"
+              "\$w = cases(1 & \"if\" u > 0 \"and\" v > 0, 2 & \"if\" u > 0 \"and\" not (v > 0), 3 & \"otherwise\")\$"
+        @test M.mlxtran_to_typst("EQUATION:\nif a > 0\nif b > 0\nx = 1\nelseif c > 0\nx = 2\nelse\nx = 3\nend\nend") ==
+              "\$x = cases(1 & \"if\" a > 0 \"and\" b > 0, 2 & \"if\" a > 0 \"and\" c > 0, " *
+              "3 & \"if\" a > 0 \"and\" not (b > 0) \"and\" not (c > 0))\$"
+    end
+
+    @testset "extended functions" begin
+        @test M.mlxtran_to_typst("EQUATION:\ny = sqrt(x) + tanh(z) + floor(w)") ==
+              "\$y = sqrt(x) + tanh(z) + floor(w)\$"
+        @test M.mlxtran_to_typst("EQUATION:\ny = logit(p)") == "\$y = \"logit\"(p)\$"
     end
 end

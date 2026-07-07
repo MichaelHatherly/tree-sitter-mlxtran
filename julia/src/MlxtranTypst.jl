@@ -106,9 +106,12 @@ end
 
 # --- Function names ---------------------------------------------------------
 
+# Functions typst renders as math operators; others fall back to upright text.
 const FUNCTIONS = Set([
-    "exp", "log", "ln", "sin", "cos", "tan", "sqrt", "abs",
-    "floor", "ceil", "min", "max",
+    "exp", "log", "ln", "sqrt", "abs",
+    "sin", "cos", "tan", "sinh", "cosh", "tanh",
+    "arcsin", "arccos", "arctan",
+    "floor", "ceil", "round", "min", "max",
 ])
 
 function func_name(name::AbstractString)
@@ -230,25 +233,32 @@ function if_branches(node)
     return branches
 end
 
-# `nothing` in a guard marks an `else` branch.
-function guard_label(parts)
-    length(parts) == 1 && parts[1] === nothing && return "\"otherwise\""
-    rendered = [p === nothing ? "\"otherwise\"" : p for p in parts]
-    return "\"if\" " * join(rendered, " \"and\" ")
-end
+const OTHERWISE = "\"otherwise\""
+
+guard_label(parts) = parts == [OTHERWISE] ? OTHERWISE : "\"if\" " * join(parts, " \"and\" ")
 
 # Flatten a (possibly nested) `if_statement` into (target, guard-label, value)
-# triples, conjoining branch conditions along the path.
+# triples, conjoining branch conditions along the path. An `else` at the top
+# level is the catch-all "otherwise"; nested, it becomes the explicit negation
+# of its sibling conditions so conjunctions read cleanly.
 function flatten_if!(triples, node, guard, src)
+    prior = String[]
     for (cond, body) in if_branches(node)
-        parts = vcat(guard, Any[cond === nothing ? nothing : to_typst(cond, src)])
+        if cond === nothing
+            negation = join(("not ($c)" for c in prior), " \"and\" ")
+            shown = isempty(guard) ? OTHERWISE : negation
+            deeper = negation
+        else
+            shown = deeper = to_typst(cond, src)
+            push!(prior, shown)
+        end
         for stmt in body
             t = TS.node_type(stmt)
             if t == "assignment"
-                push!(triples, (target_typst(stmt, src), guard_label(parts),
+                push!(triples, (target_typst(stmt, src), guard_label(vcat(guard, [shown])),
                                 to_typst(TS.child(stmt, "value"), src)))
             elseif t == "if_statement"
-                flatten_if!(triples, stmt, parts, src)
+                flatten_if!(triples, stmt, vcat(guard, [deeper]), src)
             end
         end
     end
