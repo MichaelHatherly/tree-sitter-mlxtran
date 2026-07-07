@@ -1,0 +1,16 @@
+name = "MlxtranTypst"
+uuid = "b3f4c1a2-6d7e-4f8a-9c0b-1e2d3f4a5b6c"
+authors = ["Michael Hatherly <michaelhatherly@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+TreeSitter = "f42328cb-ece0-4cf2-995f-9e7abb27d006"
+
+[sources]
+TreeSitter = {path = "../../TreeSitter.jl"}
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
