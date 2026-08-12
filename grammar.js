@@ -130,7 +130,9 @@ module.exports = grammar({
       optional(","),
     )), "}"),
 
-    _list_element: $ => choice($.pair, $._expression),
+    _list_element: $ => choice($.pair, $.flag, $._expression),
+
+    flag: $ => token(/[A-Za-z_][A-Za-z0-9_]*(-[A-Za-z_][A-Za-z0-9_]*)+/),
 
     pair: $ => seq(
       field("key", choice($.call, $.identifier, $.string, $.number)),

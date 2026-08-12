@@ -701,6 +701,10 @@
           "named": true
         },
         {
+          "type": "flag",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },
@@ -1105,6 +1109,10 @@
   {
     "type": "end",
     "named": false
+  },
+  {
+    "type": "flag",
+    "named": true
   },
   {
     "type": "if",
