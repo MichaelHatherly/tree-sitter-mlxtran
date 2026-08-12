@@ -1,0 +1,113 @@
+==================
+bare hyphenated flag as the last element of an attribute list
+==================
+
+[INDIVIDUAL]
+c = {distribution=logNormal, typical=c_pop, no-variability}
+
+---
+
+(source_file
+  (square_section
+    name: (section_name)
+    (assignment
+      target: (identifier)
+      value: (list
+        (pair key: (identifier) value: (identifier))
+        (pair key: (identifier) value: (identifier))
+        (flag)))))
+
+==================
+bare hyphenated flag ahead of other list elements
+==================
+
+[INDIVIDUAL]
+c = {no-variability, distribution=logNormal}
+
+---
+
+(source_file
+  (square_section
+    name: (section_name)
+    (assignment
+      target: (identifier)
+      value: (list
+        (flag)
+        (pair key: (identifier) value: (identifier))))))
+
+==================
+unspaced subtraction in an equation stays arithmetic
+==================
+
+EQUATION:
+d = a-b
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (binary_expression left: (identifier) right: (identifier)))))
+
+==================
+unspaced subtraction as a pair value stays arithmetic
+==================
+
+[INDIVIDUAL]
+c = {typical=a-b}
+
+---
+
+(source_file
+  (square_section
+    name: (section_name)
+    (assignment
+      target: (identifier)
+      value: (list
+        (pair
+          key: (identifier)
+          value: (binary_expression left: (identifier) right: (identifier)))))))
+
+==================
+unspaced subtraction in call arguments stays arithmetic
+==================
+
+EQUATION:
+y = abs(a-b)
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (identifier)
+      value: (call
+        function: (identifier)
+        arguments: (arguments
+          (binary_expression left: (identifier) right: (identifier)))))))
+
+==================
+chained unspaced subtraction in a parenthesized term stays arithmetic
+==================
+
+ODE:
+ddt_x = k*y + (a-b-c)*z
+
+---
+
+(source_file
+  (label_block
+    name: (block_name)
+    (assignment
+      target: (derivative)
+      value: (binary_expression
+        left: (binary_expression left: (identifier) right: (identifier))
+        right: (binary_expression
+          left: (parenthesized_expression
+            (binary_expression
+              left: (binary_expression left: (identifier) right: (identifier))
+              right: (identifier)))
+          right: (identifier))))))
