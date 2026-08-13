@@ -899,9 +899,20 @@
         },
         {
           "type": "SYMBOL",
+          "name": "flag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_expression"
         }
       ]
+    },
+    "flag": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[A-Za-z_][A-Za-z0-9_]*(-[A-Za-z_][A-Za-z0-9_]*)+"
+      }
     },
     "pair": {
       "type": "SEQ",

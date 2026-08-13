@@ -9,8 +9,9 @@
 ; Calls
 (call function: (identifier) @function.call)
 
-; Attribute keys
+; Attribute keys and bare flags
 (pair key: (identifier) @property)
+(flag) @attribute
 
 ; Literals
 (number) @number
