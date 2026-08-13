@@ -2,7 +2,7 @@
   "name": "tree-sitter-mlxtran",
   "version": "0.0.1",
   "description": "Tree-sitter grammar for Monolix mlxtran files",
-  "repository": "https://github.com/tree-sitter/tree-sitter-mlxtran",
+  "repository": "https://github.com/MichaelHatherly/tree-sitter-mlxtran",
   "license": "MIT",
   "author": {
     "name": "Michael Hatherly",
