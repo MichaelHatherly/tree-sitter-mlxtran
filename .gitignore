@@ -6,7 +6,6 @@ Cargo.lock
 build/
 prebuilds/
 node_modules/
-package-lock.json
 
 # Swift artifacts
 .build/
@@ -17,6 +16,7 @@ _obj/
 
 # Python artifacts
 .venv/
+__pycache__/
 dist/
 *.egg-info
 *.whl
