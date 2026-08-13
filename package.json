@@ -31,6 +31,9 @@
     "node-gyp-build": "^4.8.4"
   },
   "devDependencies": {
+    "eslint": "^9.14.0",
+    "eslint-config-treesitter": "^1.0.2",
+    "globals": "^16.0.0",
     "prebuildify": "^6.0.1",
     "tree-sitter": "^0.25.0",
     "tree-sitter-cli": "^0.25.10"
@@ -45,6 +48,8 @@
   },
   "scripts": {
     "install": "node-gyp-build",
+    "lint": "eslint grammar.js",
+    "lint:fix": "eslint grammar.js --fix",
     "prestart": "tree-sitter build --wasm",
     "start": "tree-sitter playground",
     "test": "node --test bindings/node/*_test.js"
