@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-mlxtran",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Tree-sitter grammar for Monolix mlxtran files",
   "repository": "https://github.com/MichaelHatherly/tree-sitter-mlxtran",
   "license": "MIT",

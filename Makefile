@@ -4,7 +4,7 @@ endif
 
 LANGUAGE_NAME := tree-sitter-mlxtran
 HOMEPAGE_URL := https://github.com/MichaelHatherly/tree-sitter-mlxtran
-VERSION := 0.0.1
+VERSION := 0.1.0
 
 # repository
 SRC_DIR := src
