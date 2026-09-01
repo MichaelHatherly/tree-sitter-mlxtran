@@ -1,21 +1,41 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "tree-sitter-mlxtran"
-version = "0.0.1"
 description = "Tree-sitter grammar for Monolix mlxtran files"
-requires-python = ">=3.9"
-license = { text = "MIT" }
+version = "0.0.1"
+keywords = ["incremental", "parsing", "tree-sitter", "mlxtran", "monolix"]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Compilers",
+  "Topic :: Text Processing :: Linguistic",
+  "Typing :: Typed",
+]
 authors = [{ name = "Michael Hatherly", email = "michaelhatherly@gmail.com" }]
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+readme = "README.md"
+
+[project.urls]
+Homepage = "https://github.com/MichaelHatherly/tree-sitter-mlxtran"
+Repository = "https://github.com/MichaelHatherly/tree-sitter-mlxtran"
+Issues = "https://github.com/MichaelHatherly/tree-sitter-mlxtran/issues"
 
 [project.optional-dependencies]
-core = ["tree-sitter>=0.22"]
+core = ["tree-sitter~=0.24"]
 
-[tool.setuptools]
-packages = ["tree_sitter_mlxtran"]
-package-dir = { "" = "bindings/python" }
-
-[tool.setuptools.package-data]
-tree_sitter_mlxtran = ["*.pyi", "py.typed"]
+[tool.cibuildwheel]
+# cp310 builds one abi3 wheel per platform, good for 3.10 and every later
+# CPython. The free-threaded builds cannot use the stable ABI, so they need a
+# wheel each.
+build = "cp310-* cp313t-* cp314t-*"
+enable = ["cpython-freethreading"]
+build-frontend = "build"
+test-requires = "tree-sitter~=0.24"
+test-command = """\
+python -m unittest discover -v -s {project}/bindings/python/tests -t {project}/bindings/python/tests && \
+python -m unittest discover -v -s {project}/bindings/python/dist-tests -t {project}/bindings/python/dist-tests\
+"""
