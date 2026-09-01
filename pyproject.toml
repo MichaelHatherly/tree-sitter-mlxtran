@@ -29,10 +29,9 @@ core = ["tree-sitter~=0.24"]
 
 [tool.cibuildwheel]
 # cp310 builds one abi3 wheel per platform, good for 3.10 and every later
-# CPython. The free-threaded builds cannot use the stable ABI, so they need a
-# wheel each.
-build = "cp310-* cp313t-* cp314t-*"
-enable = ["cpython-freethreading"]
+# CPython. Free-threaded builds cannot use the stable ABI, so 3.14t needs its
+# own wheel.
+build = "cp310-* cp314t-*"
 build-frontend = "build"
 test-requires = "tree-sitter~=0.24"
 test-command = """\
