@@ -39,34 +39,3 @@ jobs:
         uses: tree-sitter/parse-action@f44ffa94f802024f27e821a72e6f2f3efc5dd521 # v4
         with:
           files: examples/*
-
-  package:
-    name: Build Python package
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.10"
-      - name: Build distributions
-        run: |
-          python -m pip install --upgrade build twine
-          python -m build
-          python -m twine check --strict dist/*
-      - name: Install from the sdist
-        # A git install never goes through the sdist, so only this step catches
-        # a tarball that omits the parser headers or the highlight query.
-        run: |
-          python -m venv /tmp/sdist-venv
-          /tmp/sdist-venv/bin/pip install --no-binary tree-sitter-mlxtran dist/*.tar.gz
-          /tmp/sdist-venv/bin/pip install "tree-sitter~=0.24"
-      - name: Test the installed package
-        working-directory: /tmp
-        run: |
-          for suite in tests dist-tests; do
-            /tmp/sdist-venv/bin/python -m unittest discover -v \
-              -s "$GITHUB_WORKSPACE/bindings/python/$suite" \
-              -t "$GITHUB_WORKSPACE/bindings/python/$suite"
-          done

@@ -1,11 +1,19 @@
-name: Publish
+# The filename is registered as the trusted publisher on PyPI, so renaming this
+# file breaks publishing until the publisher is re-registered.
+name: Packages
 
 on:
   push:
+    branches: [main]
     tags: ["v*"]
+  pull_request:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
 
 jobs:
   sdist:
@@ -17,12 +25,27 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.13"
+          python-version: "3.10"
       - name: Build sdist
         run: |
           python -m pip install --upgrade build twine
           python -m build --sdist
           python -m twine check --strict dist/*
+      - name: Install from the sdist
+        # A git install never goes through the sdist, so only this step catches
+        # a tarball that omits the parser headers or the highlight query.
+        run: |
+          python -m venv /tmp/sdist-venv
+          /tmp/sdist-venv/bin/pip install --no-binary tree-sitter-mlxtran dist/*.tar.gz
+          /tmp/sdist-venv/bin/pip install "tree-sitter~=0.24"
+      - name: Test the installed sdist
+        working-directory: /tmp
+        run: |
+          for suite in tests dist-tests; do
+            /tmp/sdist-venv/bin/python -m unittest discover -v \
+              -s "$GITHUB_WORKSPACE/bindings/python/$suite" \
+              -t "$GITHUB_WORKSPACE/bindings/python/$suite"
+          done
       - name: Upload sdist
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -49,7 +72,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Build wheels
+      - name: Build and test wheels
         uses: pypa/cibuildwheel@1828c10ab37f080699c7b81cea34097c684a7074 # v4.2.0
         env:
           CIBW_ARCHS: ${{matrix.archs}}
@@ -61,6 +84,7 @@ jobs:
 
   publish:
     name: Publish to PyPI
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: [sdist, wheels]
     runs-on: ubuntu-24.04
     environment:
