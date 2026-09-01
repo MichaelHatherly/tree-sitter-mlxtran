@@ -1,0 +1,104 @@
+# The filename is registered as the trusted publisher on PyPI, so renaming this
+# file breaks publishing until the publisher is re-registered.
+name: Packages
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+jobs:
+  sdist:
+    name: Build sdist
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.10"
+      - name: Build sdist
+        run: |
+          python -m pip install --upgrade build twine
+          python -m build --sdist
+          python -m twine check --strict dist/*
+      - name: Install from the sdist
+        # A git install never goes through the sdist, so only this step catches
+        # a tarball that omits the parser headers or the highlight query.
+        run: |
+          python -m venv /tmp/sdist-venv
+          /tmp/sdist-venv/bin/pip install --no-binary tree-sitter-mlxtran dist/*.tar.gz
+          /tmp/sdist-venv/bin/pip install "tree-sitter~=0.24"
+      - name: Test the installed sdist
+        working-directory: /tmp
+        run: |
+          for suite in tests dist-tests; do
+            /tmp/sdist-venv/bin/python -m unittest discover -v \
+              -s "$GITHUB_WORKSPACE/bindings/python/$suite" \
+              -t "$GITHUB_WORKSPACE/bindings/python/$suite"
+          done
+      - name: Upload sdist
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist-sdist
+          path: dist/*.tar.gz
+
+  wheels:
+    name: Build wheels (${{matrix.os}})
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            archs: x86_64
+          - os: ubuntu-24.04-arm
+            archs: aarch64
+          - os: macos-15
+            archs: arm64
+          - os: macos-15-intel
+            archs: x86_64
+          - os: windows-2025
+            archs: AMD64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build and test wheels
+        uses: pypa/cibuildwheel@1828c10ab37f080699c7b81cea34097c684a7074 # v4.2.0
+        env:
+          CIBW_ARCHS: ${{matrix.archs}}
+      - name: Upload wheels
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist-${{matrix.os}}
+          path: wheelhouse/*.whl
+
+  publish:
+    name: Publish to PyPI
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [sdist, wheels]
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/p/tree-sitter-mlxtran
+    permissions:
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: dist
+          pattern: dist-*
+          merge-multiple: true
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2

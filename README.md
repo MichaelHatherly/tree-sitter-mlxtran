@@ -26,12 +26,22 @@ let mut parser = tree_sitter::Parser::new();
 parser.set_language(&tree_sitter_mlxtran::LANGUAGE.into())?;
 ```
 
+```sh
+pip install tree-sitter-mlxtran
+```
+
 ```python
-from tree_sitter import Language, Parser
+from tree_sitter import Language, Parser, Query
 import tree_sitter_mlxtran
 
 parser = Parser(Language(tree_sitter_mlxtran.language()))
+highlights = Query(Language(tree_sitter_mlxtran.language()),
+                   tree_sitter_mlxtran.HIGHLIGHTS_QUERY)
 ```
+
+Wheels cover Linux, macOS and Windows on x86-64 and arm64 for CPython 3.10 and
+up. Anywhere else, pip builds from the source distribution, which needs a C
+compiler.
 
 ## Development
 
