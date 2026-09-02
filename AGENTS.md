@@ -55,6 +55,9 @@ The version appears in six files and they move together:
 - `pyproject.toml`
 - `tree-sitter.json`
 
+`package-lock.json` carries it too, in two places. Run `npm install
+--package-lock-only` after editing `package.json` and let npm write it.
+
 A release renames `## [Unreleased]` to the new version with the date, adds the
 compare link at the foot of `CHANGELOG.md`, and leaves an empty `Unreleased`
 section behind. Pushing a `v*` tag on the merged bump commit is what triggers

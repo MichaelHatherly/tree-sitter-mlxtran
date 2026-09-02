@@ -11,6 +11,8 @@ without breaking any signature.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-02
+
 ### Added
 
 - Grammar for mlxtran project files and the model files they reference: angle
@@ -24,4 +26,5 @@ without breaking any signature.
 - `queries/highlights.scm`, exposed to Python consumers as `HIGHLIGHTS_QUERY`.
 - Bindings for C, Node, Python and Rust.
 
-[Unreleased]: https://github.com/MichaelHatherly/tree-sitter-mlxtran/commits/main
+[Unreleased]: https://github.com/MichaelHatherly/tree-sitter-mlxtran/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/MichaelHatherly/tree-sitter-mlxtran/releases/tag/v0.1.0
