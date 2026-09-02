@@ -23,6 +23,7 @@ readme = "README.md"
 Homepage = "https://github.com/MichaelHatherly/tree-sitter-mlxtran"
 Repository = "https://github.com/MichaelHatherly/tree-sitter-mlxtran"
 Issues = "https://github.com/MichaelHatherly/tree-sitter-mlxtran/issues"
+Changelog = "https://github.com/MichaelHatherly/tree-sitter-mlxtran/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 core = ["tree-sitter~=0.24"]
