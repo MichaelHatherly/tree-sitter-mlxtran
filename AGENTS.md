@@ -55,6 +55,13 @@ The version appears in six files and they move together:
 - `pyproject.toml`
 - `tree-sitter.json`
 
+Two generated files follow from those, and both need committing with the bump:
+`npm install --package-lock-only` writes the version into `package-lock.json`,
+and `npx tree-sitter generate` writes the one in `tree-sitter.json` into the
+language metadata at the foot of `src/parser.c`. CI's generate check fails on
+the second if it is skipped, and `tree-sitter test` will not catch it, since
+that only regenerates when `grammar.js` changed.
+
 A release renames `## [Unreleased]` to the new version with the date, adds the
 compare link at the foot of `CHANGELOG.md`, and leaves an empty `Unreleased`
 section behind. Pushing a `v*` tag on the merged bump commit is what triggers
